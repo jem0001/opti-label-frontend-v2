@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "TopNav",
-    "slug": "TopNav",
+    "name": "OptiLabel",
+    "slug": "OptiLabel",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,25 +13,41 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.mananabasexpo.TopNav"
+      "package": "com.mananabasexpo.OptiLabel"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/splash",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/Poppins-Bold.ttf",
+            "./assets/fonts/Poppins-Black.ttf",
+            "./assets/fonts/Poppins-ExtraBold.ttf",
+            "./assets/fonts/Poppins-ExtraLight.ttf",
+            "./assets/fonts/Poppins-Light.ttf",
+            "./assets/fonts/Poppins-Medium.ttf",
+            "./assets/fonts/Poppins-Regular.ttf",
+            "./assets/fonts/Poppins-SemiBold.ttf",
+            "./assets/fonts/Poppins-Thin.ttf"
+          ]
         }
       ]
     ],
@@ -43,8 +59,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "5878ade8-61a9-47b8-bae8-1ea3e8114201"
+        "projectId": "99fe0df5-bb13-4623-91b5-e5dbbbddc194"
       }
-    }
+    },
+    "owner": "mananabasexpo"
   }
 }
