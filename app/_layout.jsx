@@ -8,6 +8,8 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import GlobalProvider from "@/context/context";
+import { useGlobalContext } from "../context/context";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -36,17 +38,16 @@ const RootLayout = () => {
   return (
     <>
       <GlobalProvider>
+        <StatusBar style="auto" translucent={false} />
         <GestureHandlerRootView>
-          <StatusBar style="light" translucent={false} />
           <SafeAreaProvider>
             <SafeAreaView className="h-full">
               <Stack>
                 <Stack.Screen name="index" options={{ headerShown: false }} />
                 <Stack.Screen
-                  name="settings"
-                  options={{ headerShown: true, title: "Settings" }}
+                  name="(stacks)"
+                  options={{ headerShown: false }}
                 />
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen
                   name="+not-found"
                   options={{ headerShown: false }}

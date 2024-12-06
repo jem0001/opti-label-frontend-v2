@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Modal,
 } from "react-native";
 import { Image } from "expo-image";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -13,14 +14,12 @@ import { useNavigation } from "@react-navigation/native";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { router } from "expo-router";
-
-// import { useAuth } from "../auth/authContext";
+import { useGlobalContext } from "../context/context";
+import NetworkModal from "../components/NetworkModal";
 
 const loginValidationSchema = yup.object().shape({
-  // email: yup
-  //   .string()
+  username: yup.string().required("Username is required"),
   //   .email("Please enter a valid email")
-  //   .required("Email is required"),
   password: yup
     .string()
     .min(6, ({ min }) => `Password must be at least ${min} characters`)
@@ -28,86 +27,111 @@ const loginValidationSchema = yup.object().shape({
 });
 
 const Login = () => {
-  const submit = () => {
-    console.log("submitted");
-    router.push("/scan");
+  const { isConnected, login } = useGlobalContext();
+  const [showNetworkModal, setShowNetworkModal] = useState(false);
+
+  const submit = (values) => {
+    (async () => {
+      try {
+        if (!isConnected) {
+          setShowNetworkModal(true);
+          return;
+        }
+        console.log("submitted", values);
+        const token = await login(values.username, values.password);
+        console.log("token received", token);
+        router.push("/scan");
+        return;
+      } catch (error) {
+        console.log("LogiNError: ", error.message);
+      }
+    })();
   };
   return (
-    <View style={styles.container}>
-      <Image
-        source={
-          "https://img.freepik.com/free-vector/login-concept-illustration_114360-739.jpg"
-        }
-        style={styles.logo}
-        className="bg-red-400"
-      />
+    <>
+      <View style={styles.container}>
+        <Image
+          source={
+            "https://img.freepik.com/free-vector/login-concept-illustration_114360-739.jpg"
+          }
+          style={styles.logo}
+          className="bg-red-400"
+        />
 
-      <Text style={styles.title}>Login</Text>
-      <Formik
-        validationSchema={loginValidationSchema}
-        initialValues={{ email: "", password: "" }}
-        onSubmit={submit}
-      >
-        {({
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          values,
-          errors,
-          touched,
-          isValid,
-        }) => (
-          <>
-            <View style={styles.inputContainer}>
-              <Icon name="mail-outline" size={25} style={styles.icon} />
-              <TextInput
-                style={styles.input}
-                placeholder="Email"
-                keyboardType="email-address"
-                onChangeText={handleChange("email")}
-                onBlur={handleBlur("email")}
-                value={values.email}
-              />
-            </View>
-            {errors.email && touched.email && (
-              <Text style={styles.errorText}>{errors.email}</Text>
-            )}
-            <View style={styles.inputContainer}>
-              <Icon name="lock-closed-outline" size={25} style={styles.icon} />
-              <TextInput
-                style={styles.input}
-                placeholder="Password"
-                secureTextEntry
-                onChangeText={handleChange("password")}
-                onBlur={handleBlur("password")}
-                value={values.password}
-              />
-            </View>
+        <Text style={styles.title}>Login</Text>
+        <Formik
+          validationSchema={loginValidationSchema}
+          initialValues={{ username: "", password: "" }}
+          onSubmit={submit}
+        >
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            values,
+            errors,
+            touched,
+            isValid,
+          }) => (
+            <>
+              <View style={styles.inputContainer}>
+                <Icon name="person-outline" size={25} style={styles.icon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Username"
+                  onChangeText={handleChange("username")}
+                  onBlur={handleBlur("username")}
+                  value={values.username}
+                />
+              </View>
+              {errors.username && touched.username && (
+                <Text style={styles.errorText}>{errors.username}</Text>
+              )}
+              <View style={styles.inputContainer}>
+                <Icon
+                  name="lock-closed-outline"
+                  size={25}
+                  style={styles.icon}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Password"
+                  secureTextEntry
+                  onChangeText={handleChange("password")}
+                  onBlur={handleBlur("password")}
+                  value={values.password}
+                />
+              </View>
 
-            {errors.password && (
-              <Text style={styles.errorText}>{errors.password}</Text>
-            )}
-            {/* <TouchableOpacity onPress={() => navigation.navigate("Forget")}>
+              {errors.password && (
+                <Text style={styles.errorText}>{errors.password}</Text>
+              )}
+              {/* <TouchableOpacity onPress={() => navigation.navigate("Forget")}>
               <Text style={styles.forgotPassword}>Forgot Password?</Text>
             </TouchableOpacity> */}
-            <TouchableOpacity
-              style={styles.button}
-              className="bg-accent mt-4"
-              onPress={handleSubmit}
-              disabled={!isValid}
-            >
-              <Text style={styles.buttonText}>Login</Text>
-            </TouchableOpacity>
-            {/* <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
+              <TouchableOpacity
+                style={styles.button}
+                className="bg-accent mt-4"
+                onPress={handleSubmit}
+                disabled={!isValid}
+              >
+                <Text style={styles.buttonText}>Login</Text>
+              </TouchableOpacity>
+              {/* <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
               <Text style={styles.signUp}>
                 Don't have an account?{" "}
                 <Text style={styles.signUpLink}>Sign Up</Text>
               </Text>
             </TouchableOpacity> */}
-          </>
-        )}
-      </Formik>
-    </View>
+            </>
+          )}
+        </Formik>
+      </View>
+      <NetworkModal
+        visible={showNetworkModal}
+        onClose={() => setShowNetworkModal(false)}
+      />
+    </>
   );
 };
 

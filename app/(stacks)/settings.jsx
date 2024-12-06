@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { ScrollView, TextInput, TouchableOpacity } from "react-native";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -29,6 +30,12 @@ const Settings = () => {
                 value={""}
               />
             </View>
+            <TouchableOpacity
+              className="m-3 w-fit bg-accent p-4 rounded-lg"
+              onPress={() => router.navigate("/")}
+            >
+              <Text className="text-white text-center font-pbold">Logout</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -76,9 +83,10 @@ const Settings = () => {
                 value={""}
               />
             </View>
-            {/* <TouchableOpacity className="m-3 w-full bg-accent p-4 rounded-lg ">
+
+            <TouchableOpacity className="m-3 w-fit bg-accent p-4 rounded-lg ">
               <Text className="text-white text-center font-pbold">Save</Text>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
           </View>
         </View>
       </View>
