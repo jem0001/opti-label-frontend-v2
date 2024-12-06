@@ -11,7 +11,7 @@ const StoreModal = ({ visible, onClose }) => {
     setBarcode("");
     setRackBarcode("");
 
-    router.navigate("/scan");
+    router.navigate("/");
   };
   return (
     <Modal visible={visible} transparent={true} animationType="fade">

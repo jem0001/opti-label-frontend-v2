@@ -49,6 +49,12 @@
             "./assets/fonts/Poppins-Thin.ttf"
           ]
         }
+      ],
+      [
+        "expo-secure-store",
+        {
+          "configureAndroidBackup": true
+        }
       ]
     ],
     "experiments": {

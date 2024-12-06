@@ -13,7 +13,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import { Formik } from "formik";
 import * as yup from "yup";
-import { router } from "expo-router";
+import { Redirect, router } from "expo-router";
 import { useGlobalContext } from "../context/context";
 import NetworkModal from "../components/NetworkModal";
 
@@ -27,7 +27,7 @@ const loginValidationSchema = yup.object().shape({
 });
 
 const Login = () => {
-  const { isConnected, login } = useGlobalContext();
+  const { isConnected, login, isLoggedIn } = useGlobalContext();
   const [showNetworkModal, setShowNetworkModal] = useState(false);
 
   const submit = (values) => {
@@ -37,16 +37,18 @@ const Login = () => {
           setShowNetworkModal(true);
           return;
         }
-        console.log("submitted", values);
         const token = await login(values.username, values.password);
-        console.log("token received", token);
-        router.push("/scan");
         return;
       } catch (error) {
         console.log("LogiNError: ", error.message);
       }
     })();
   };
+
+  if (isLoggedIn) {
+    return <Redirect href={"/"} />;
+  }
+
   return (
     <>
       <View style={styles.container}>
@@ -107,8 +109,8 @@ const Login = () => {
                 <Text style={styles.errorText}>{errors.password}</Text>
               )}
               {/* <TouchableOpacity onPress={() => navigation.navigate("Forget")}>
-              <Text style={styles.forgotPassword}>Forgot Password?</Text>
-            </TouchableOpacity> */}
+        <Text style={styles.forgotPassword}>Forgot Password?</Text>
+      </TouchableOpacity> */}
               <TouchableOpacity
                 style={styles.button}
                 className="bg-accent mt-4"
@@ -118,11 +120,11 @@ const Login = () => {
                 <Text style={styles.buttonText}>Login</Text>
               </TouchableOpacity>
               {/* <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
-              <Text style={styles.signUp}>
-                Don't have an account?{" "}
-                <Text style={styles.signUpLink}>Sign Up</Text>
-              </Text>
-            </TouchableOpacity> */}
+        <Text style={styles.signUp}>
+          Don't have an account?{" "}
+          <Text style={styles.signUpLink}>Sign Up</Text>
+        </Text>
+      </TouchableOpacity> */}
             </>
           )}
         </Formik>

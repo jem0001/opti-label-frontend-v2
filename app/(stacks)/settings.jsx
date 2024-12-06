@@ -1,8 +1,10 @@
 import { router } from "expo-router";
 import { ScrollView, TextInput, TouchableOpacity } from "react-native";
 import { StyleSheet, Text, View } from "react-native";
+import { useGlobalContext } from "../../context/context";
 
 const Settings = () => {
+  const { logout } = useGlobalContext();
   return (
     <ScrollView className="h-full">
       <View className="flex-1 justify-center items-center  p-4">
@@ -32,7 +34,7 @@ const Settings = () => {
             </View>
             <TouchableOpacity
               className="m-3 w-fit bg-accent p-4 rounded-lg"
-              onPress={() => router.navigate("/")}
+              onPress={logout}
             >
               <Text className="text-white text-center font-pbold">Logout</Text>
             </TouchableOpacity>

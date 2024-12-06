@@ -1,38 +1,27 @@
-import axios from "axios";
-import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { View } from "react-native";
+// import { useGlobalContext } from "@/context/context";
+// import { useIsFocused } from "@react-navigation/native";
+// import axios from "axios";
+// import { router } from "expo-router";
+// import React, { useEffect, useState } from "react";
+// import { Text, View } from "react-native";
 
-const ProtectedRoute = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
+// const ProtectedRoute = ({ children }) => {
+//   const { isLoggedIn } = useGlobalContext();
+//   const isFocused = useIsFocused();
 
-  const verify = async () => {
-    try {
-      //   const response = await axios.get("/auth/verify");
+//   useEffect(() => {
+//     if (isFocused) {
+//       console.log("ProtectedRoute>>>, ", isLoggedIn);
+//       if (isLoggedIn) router.push("/scan");
+//       if (isLoggedIn === false) router.push("/login");
+//     }
+//   }, [isLoggedIn]);
 
-      //   console.log(response);
-      setIsAuthenticated(true);
-    } catch (error) {
-      console.log(error);
-      setIsAuthenticated(false);
-    }
-  };
+//   if (isLoggedIn === null) {
+//     return <View className="flex-1 bg-white"></View>;
+//   }
 
-  useEffect(() => {
-    verify();
-    console.log("protected route rendered");
-  }, []);
+//   return <></>;
+// };
 
-  if (isAuthenticated === null) {
-    return <View className="flex-1 bg-white"></View>;
-  }
-
-  if (!isAuthenticated) {
-    router.navigate("/");
-    return null;
-  }
-
-  return children;
-};
-
-export default ProtectedRoute;
+// export default ProtectedRoute;

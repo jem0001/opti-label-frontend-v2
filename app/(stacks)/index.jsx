@@ -10,28 +10,24 @@ import {
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { ScrollView } from "react-native";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useGlobalContext } from "../../context/context";
-import { router } from "expo-router";
-import StoreModal from "../../components/StoreModal";
+import { router, useFocusEffect } from "expo-router";
+import React from "react";
 
-const RackScan = () => {
-  const { rackBarcode, setRackBarcode } = useGlobalContext();
-  const textInputRef = useRef(null);
-  const [storeVisible, setStoreVisible] = useState(false);
+const Scan = () => {
+  const { barcode, setBarcode } = useGlobalContext();
 
   const handleBarcodeChange = (text) => {
-    setRackBarcode(text);
+    setBarcode(text);
   };
 
   const handleSubmit = () => {
-    console.log(rackBarcode);
-    setStoreVisible(true);
+    router.navigate("/actionSelection");
   };
   useEffect(() => {
     // Dismiss the keyboard when the component is mounted
     Keyboard.dismiss();
-    console.log("rack barcode", rackBarcode);
   }, []);
 
   return (
@@ -49,44 +45,40 @@ const RackScan = () => {
               paddingHorizontal: 10,
               marginBottom: 20,
               // opacity: 0,
-              // height: 0,
             }}
           >
             <TextInput
-              ref={textInputRef}
               style={{ flex: 1, height: "100%" }}
-              placeholder="rackBarcode"
+              placeholder="barcode"
               autoFocus={true}
               // showSoftInputOnFocus={false}
-              value={rackBarcode}
+              // onFocus={() => setBarcode("")}
+              value={barcode}
               onChangeText={handleBarcodeChange}
               onSubmitEditing={handleSubmit}
             />
           </View>
           <Image
-            source="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvh5XboVgFVaXAMZnf5NshNRRaQD60uwxscw&s"
+            source="https://cdn.qrplanet.com/proxy/qrcdr/plugins/qr-templates/preview/a06db94126183aa80424ca44ca2cf242.svg"
             transition={1000}
             contentFit="contain"
-            style={{ height: 150, width: 250 }}
+            style={{ height: 250, width: 250 }}
           />
           <Text className="font-pbold text-4xl text-center tracking-10 my-6">
-            Scan Your Rack
+            Scanner Ready
           </Text>
           <Text className="font-pregular text-center text-xl text-gray-600 tracking-10 mb-8">
-            Please use the integrated scanner to scan the rack's barcode. Hold
-            the scanner steady and aim at the barcode label.
+            Please use the integrated scanner to scan your item
           </Text>
+          <View className="flex-row justify-center items-center gap-2">
+            <Ionicons name="information-circle" size={15} color={"gray"} />
+            <Text className="font-pregular text-gray-600 text-center ">
+              Please position barcode withing scanning range
+            </Text>
+          </View>
         </View>
       </View>
-
-      <StoreModal
-        visible={storeVisible}
-        onClose={() => {
-          setStoreVisible(false);
-          textInputRef.current.focus();
-        }}
-      />
     </>
   );
 };
-export default RackScan;
+export default Scan;
