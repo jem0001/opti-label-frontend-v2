@@ -1,11 +1,20 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { render } from "react-dom";
-import { Modal, TouchableOpacity } from "react-native";
+import {
+  Modal,
+  TouchableOpacity,
+  ToastAndroid,
+  Button,
+  Alert,
+} from "react-native";
 import { View, Text } from "react-native";
 import { useGlobalContext } from "../../context/context";
 import ShipModal from "../../components/ShipModal";
 import { useState } from "react";
 import { router } from "expo-router";
+import ConnectionError from "../../components/ConnectionError";
+import NetworkModal from "../../components/ErrorModal";
+import ErrorModal from "../../components/ErrorModal";
 
 const ACTIONS = [
   { id: 1, title: "Ship", description: "Send item to shipping", icon: "truck" },
@@ -18,8 +27,20 @@ const ACTIONS = [
   // { id: 3, title: "Ship", description: "Send item to shipping" },
   // { id: 4, title: "Store in Rack", description: "Place item in storage" },
 ];
+
 const ActionSelection = () => {
+  const {
+    logout,
+    isConnected,
+    isServerError,
+    addProductStat,
+    setBarcode,
+    barcode,
+  } = useGlobalContext();
+
   const [shipVisible, setShipVisible] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(false);
 
   const handlePick = (id) => {
     if (id === 1) {
@@ -29,6 +50,23 @@ const ActionSelection = () => {
       router.navigate("/rackScan");
     }
   };
+
+  const handleAddProduct = async () => {
+    setIsSubmitting(true);
+    // API call
+    try {
+      setShipVisible(false);
+      await addProductStat(barcode, 1);
+      setBarcode("");
+      router.navigate("/");
+      ToastAndroid.show("Product added successfully!", ToastAndroid.SHORT);
+    } catch (error) {
+      if (error.message === "jwt expired") setError(true);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const renderItem = (item) => {
     return (
       <TouchableOpacity
@@ -49,16 +87,46 @@ const ActionSelection = () => {
     );
   };
 
+  if (isServerError) {
+    return (
+      <View className="flex-1 items-center justify-center h-screen ">
+        <ConnectionError
+          onPress={handleAddProduct}
+          isSubmitting={isSubmitting}
+        />
+      </View>
+    );
+  }
+
   return (
     <>
-      <View className="flex-1 items-center justify-center h-screen">
-        <Text className="font-psemibold text-3xl mb-6">
-          Warehouse Operations
-        </Text>
-        {ACTIONS.map((item) => renderItem(item))}
+      <View className="flex-1 items-center justify-center h-screen ">
+        <View>
+          <Text className="font-psemibold text-3xl mb-6">
+            Warehouse Operations
+          </Text>
+          {ACTIONS.map((item) => renderItem(item))}
+        </View>
       </View>
 
-      <ShipModal visible={shipVisible} onClose={() => setShipVisible(false)} />
+      <ShipModal
+        visible={shipVisible}
+        isSubmitting={isSubmitting}
+        onClose={() => setShipVisible(false)}
+        onSend={handleAddProduct}
+      />
+      <ErrorModal
+        visible={error}
+        onClose={() => {
+          (async () => {
+            setError(false);
+            await logout();
+          })();
+        }}
+        message={"Session Expired"}
+        subMessage="Your session has expired, and your login credentials are no longer valid. Please log in again to continue."
+        buttonName={"Log In Again"}
+      />
     </>
   );
 };

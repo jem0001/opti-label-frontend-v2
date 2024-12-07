@@ -1,5 +1,5 @@
 import { View, Text, Modal, TouchableOpacity } from "react-native";
-const NetworkModal = ({ visible, onClose }) => {
+const ErrorModal = ({ visible, onClose, message, subMessage, buttonName }) => {
   return (
     <Modal visible={visible} transparent={true} animationType="fade">
       <View
@@ -8,16 +8,12 @@ const NetworkModal = ({ visible, onClose }) => {
       >
         <View className="gap-1 bg-primary rounded-lg">
           <View className="w-[80%] p-8 gap-4 ">
-            <Text className="font-pbold text-2xl text-center">
-              Connection Error
-            </Text>
+            <Text className="font-pbold text-2xl text-center">{message}</Text>
             <Text className="font-pregular text-gray-600 text-center">
-              Please ensure your device is connected to the correct Wi-Fi
-              network, [Router Name], and that the Termux app is open and
-              running. After confirming these, try again
+              {subMessage}
             </Text>
             <TouchableOpacity className="bg-accent py-4" onPress={onClose}>
-              <Text className="text-center text-white">Close</Text>
+              <Text className="text-center text-white">{buttonName}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -25,4 +21,4 @@ const NetworkModal = ({ visible, onClose }) => {
     </Modal>
   );
 };
-export default NetworkModal;
+export default ErrorModal;

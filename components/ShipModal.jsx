@@ -2,9 +2,9 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { Modal, TouchableOpacity } from "react-native";
 import { Text, View } from "react-native";
 import { useGlobalContext } from "../context/context";
-const ShipModal = ({ visible, onClose }) => {
+const ShipModal = ({ visible, onClose, onSend, isSubmitting }) => {
   const { barcode } = useGlobalContext();
-  const handleAddProduct = () => {};
+
   return (
     <Modal visible={visible} transparent={true} animationType="fade">
       <View
@@ -31,7 +31,11 @@ const ShipModal = ({ visible, onClose }) => {
             >
               <Text className="text-center font-pregular">Cancel</Text>
             </TouchableOpacity>
-            <TouchableOpacity className="bg-accent rounded-lg flex-1 justify-center">
+            <TouchableOpacity
+              className="bg-accent rounded-lg flex-1 justify-center"
+              onPress={onSend}
+              disabled={isSubmitting}
+            >
               <Text className="text-center font-pregular text-white">Ok</Text>
             </TouchableOpacity>
           </View>

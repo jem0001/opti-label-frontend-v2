@@ -1,10 +1,11 @@
 import { Image } from "expo-image";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-const ConnectionError = ({ onPress }) => {
+const ConnectionErrorImage = require("@/assets/images/connection-error.png");
+const ConnectionError = ({ onPress, isSubmitting = false }) => {
   return (
-    <View className="justify-center items-center p-4">
+    <View className="justify-center items-center p-4 gap-4">
       <Image
-        source="https://static-00.iconduck.com/assets.00/network-error-symbolic-icon-512x480-4flohdjs.png"
+        source={ConnectionErrorImage}
         contentFit="contain"
         style={{ height: 200, width: 200 }}
       />
@@ -14,8 +15,8 @@ const ConnectionError = ({ onPress }) => {
         [Router Name], and that the Termux app is open and running. After
         confirming these, try again
       </Text>
-      <TouchableOpacity onPress={onPress}>
-        <Text className="font-pregular text-accent">Try Again</Text>
+      <TouchableOpacity onPress={onPress} disabled={isSubmitting}>
+        <Text className="font-pregular text-blue-500">Try Again</Text>
       </TouchableOpacity>
     </View>
   );

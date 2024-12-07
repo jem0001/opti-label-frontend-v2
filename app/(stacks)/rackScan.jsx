@@ -6,6 +6,8 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Pressable,
+  ToastAndroid,
+  Alert,
 } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,11 +16,24 @@ import { useEffect, useRef, useState } from "react";
 import { useGlobalContext } from "../../context/context";
 import { router } from "expo-router";
 import StoreModal from "../../components/StoreModal";
+import ConnectionError from "../../components/ConnectionError";
+import ErrorModal from "../../components/ErrorModal";
 
 const RackScan = () => {
-  const { rackBarcode, setRackBarcode } = useGlobalContext();
+  const {
+    isServerError,
+    rackBarcode,
+    setRackBarcode,
+    barcode,
+    setBarcode,
+    addProductStat,
+    logout,
+  } = useGlobalContext();
+
   const textInputRef = useRef(null);
   const [storeVisible, setStoreVisible] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleBarcodeChange = (text) => {
     setRackBarcode(text);
@@ -28,12 +43,40 @@ const RackScan = () => {
     console.log(rackBarcode);
     setStoreVisible(true);
   };
+
+  const handleAddProduct = async () => {
+    setIsSubmitting(true);
+    //  API call
+    try {
+      setStoreVisible(false);
+      await addProductStat(barcode, 2, rackBarcode);
+      setBarcode("");
+      setRackBarcode("");
+      ToastAndroid.show("Product added successfully!", ToastAndroid.SHORT);
+      router.navigate("/");
+    } catch (error) {
+      if (error.message === "jwt expired") setError(true);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   useEffect(() => {
     // Dismiss the keyboard when the component is mounted
     Keyboard.dismiss();
     console.log("rack barcode", rackBarcode);
   }, []);
 
+  if (isServerError) {
+    return (
+      <View className="bg-secondary flex-1 justify-center items-center">
+        <ConnectionError
+          onPress={handleAddProduct}
+          isSubmitting={isSubmitting}
+        />
+      </View>
+    );
+  }
   return (
     <>
       <View className="bg-secondary flex-1 justify-center items-center">
@@ -53,6 +96,7 @@ const RackScan = () => {
             }}
           >
             <TextInput
+              keyboardType="numeric"
               ref={textInputRef}
               style={{ flex: 1, height: "100%" }}
               placeholder="rackBarcode"
@@ -85,6 +129,21 @@ const RackScan = () => {
           setStoreVisible(false);
           textInputRef.current.focus();
         }}
+        onSend={handleAddProduct}
+        isSubmitting={isSubmitting}
+      />
+
+      <ErrorModal
+        visible={error}
+        onClose={() => {
+          (async () => {
+            setError(false);
+            await logout();
+          })();
+        }}
+        message={"Session Expired"}
+        subMessage="Your session has expired, and your login credentials are no longer valid. Please log in again to continue."
+        buttonName={"Log In Again"}
       />
     </>
   );

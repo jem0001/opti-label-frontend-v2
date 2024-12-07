@@ -12,50 +12,50 @@ axios.defaults.timeout = 3000;
 const GlobalContext = createContext();
 
 const GlobalProvider = ({ children }) => {
-  const [userToken, setUserToken] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(null);
-
-  const [students, setStudents] = useState("jem");
   const { isConnected } = useNetInfo();
+  const [isServerError, setIsServerError] = useState(false);
+
+  // ProductFormData
   const [barcode, setBarcode] = useState("");
   const [rackBarcode, setRackBarcode] = useState("");
 
-  // EXPO SECURE STORE
-  // Save token
-  const saveToken = async (token) => {
-    try {
-      await SecureStore.setItemAsync("accessToken", token);
-      console.log("Token saved successfully!");
-    } catch (error) {
-      console.error("Error saving token", error);
-    }
-  };
+  // // EXPO SECURE STORE
+  // // Save token
+  // const saveToken = async (token) => {
+  //   try {
+  //     await SecureStore.setItemAsync("accessToken", token);
+  //     console.log("Token saved successfully!");
+  //   } catch (error) {
+  //     console.error("Error saving token", error);
+  //   }
+  // };
 
-  // Retrieve token
-  const getToken = async () => {
-    try {
-      const token = await SecureStore.getItemAsync("accessToken");
-      if (token) {
-        console.log("Token retrieved:", token);
-        return token;
-      } else {
-        console.log("No token found");
-      }
-    } catch (error) {
-      console.error("Error retrieving token", error);
-    }
-  };
+  // // Retrieve token
+  // const getToken = async () => {
+  //   try {
+  //     const token = await SecureStore.getItemAsync("accessToken");
+  //     if (token) {
+  //       console.log("Token retrieved:", token);
+  //       return token;
+  //     } else {
+  //       console.log("No token found");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error retrieving token", error);
+  //   }
+  // };
 
-  // Clear token
-  const clearToken = async () => {
-    try {
-      await SecureStore.deleteItemAsync("accessToken");
-      console.log("Token cleared");
-    } catch (error) {
-      console.error("Error clearing token", error);
-    }
-  };
-  // EXPO SECURE STORE
+  // // Clear token
+  // const clearToken = async () => {
+  //   try {
+  //     await SecureStore.deleteItemAsync("accessToken");
+  //     console.log("Token cleared");
+  //   } catch (error) {
+  //     console.error("Error clearing token", error);
+  //   }
+  // };
+  // // EXPO SECURE STORE
 
   const getCategories = async () => {
     try {
@@ -64,6 +64,33 @@ const GlobalProvider = ({ children }) => {
       return response.data.categories;
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const addProductStat = async (barcode, type, sub_type = "") => {
+    try {
+      const token = await SecureStore.getItemAsync("accessToken");
+      const response = await axios.post(
+        "/products-stat",
+        {
+          barcode,
+          type,
+          sub_type,
+        },
+        axiosConfig(token)
+      );
+      setIsServerError(false);
+      console.log(response.data.message);
+    } catch (error) {
+      if (error.code === "ERR_NETWORK") {
+        setIsServerError(true);
+        throw new Error(error.message);
+      }
+      throw new Error(
+        error.response?.data?.message?.message ||
+          error.response?.data?.message ||
+          "An unknown error occurred during login, contact the developer."
+      );
     }
   };
 
@@ -76,18 +103,28 @@ const GlobalProvider = ({ children }) => {
       router.navigate("/");
       return token;
     } catch (error) {
-      throw new Error(error.response.data.message);
+      if (error.code === "ERR_NETWORK") {
+        setIsServerError(true);
+        throw new Error(error.message);
+      }
+      throw new Error(
+        error.response?.data?.message?.message ||
+          error.response?.data?.message ||
+          "An unknown error occurred during login, contact the developer."
+      );
     }
   };
 
   const logout = async () => {
     try {
-      await clearToken();
+      await SecureStore.deleteItemAsync("accessToken");
       setIsLoggedIn(false);
+      setBarcode("");
+      setRackBarcode("");
       router.navigate("/login");
     } catch (error) {
       console.log("ERROR LOGGING OUT");
-      throw new Error(error.response.data.message);
+      throw new Error(error);
     }
   };
 
@@ -102,12 +139,14 @@ const GlobalProvider = ({ children }) => {
   useEffect(() => {
     (async () => {
       try {
-        const token = await getToken();
+        const token = await SecureStore.getItemAsync("accessToken");
         const response = await axios.get("/auth/verify", axiosConfig(token));
         setIsLoggedIn(true);
         console.log("token setttted");
       } catch (error) {
-        console.log(error);
+        if (error.code === "ERR_NETWORK") {
+          console.log("lego error in verify", error.code);
+        }
         setIsLoggedIn(false);
       }
     })();
@@ -115,22 +154,19 @@ const GlobalProvider = ({ children }) => {
   return (
     <GlobalContext.Provider
       value={{
-        students,
         getCategories,
         isConnected,
+        isServerError,
+        setIsServerError,
         barcode,
         setBarcode,
         rackBarcode,
         setRackBarcode,
         login,
         logout,
-        saveToken,
-        getToken,
-        clearToken,
-        userToken,
-        setUserToken,
         setIsLoggedIn,
         isLoggedIn,
+        addProductStat,
       }}
     >
       {children}

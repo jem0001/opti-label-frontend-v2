@@ -41,7 +41,7 @@ export default function TabLayout() {
             headerLeft: () => (
               <TouchableOpacity
                 onPress={handleActionSelectionBack}
-                className="pr-8 py-4 bg-green-500"
+                className="pr-8 py-4 "
               >
                 <Ionicons name="arrow-back" size={23} />
               </TouchableOpacity>

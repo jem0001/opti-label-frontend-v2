@@ -15,7 +15,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import { Redirect, router } from "expo-router";
 import { useGlobalContext } from "../context/context";
-import NetworkModal from "../components/NetworkModal";
+import ErrorModal from "../components/ErrorModal";
 
 const loginValidationSchema = yup.object().shape({
   username: yup.string().required("Username is required"),
@@ -27,20 +27,21 @@ const loginValidationSchema = yup.object().shape({
 });
 
 const Login = () => {
-  const { isConnected, login, isLoggedIn } = useGlobalContext();
+  const { isServerError, setIsServerError, isConnected, login, isLoggedIn } =
+    useGlobalContext();
   const [showNetworkModal, setShowNetworkModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const submit = (values) => {
     (async () => {
-      try {
-        if (!isConnected) {
-          setShowNetworkModal(true);
-          return;
-        }
-        const token = await login(values.username, values.password);
+      if (!isConnected) {
+        setShowNetworkModal(true);
         return;
+      }
+      try {
+        const token = await login(values.username, values.password);
       } catch (error) {
-        console.log("LogiNError: ", error.message);
+        setErrorMessage(error.message);
       }
     })();
   };
@@ -61,6 +62,12 @@ const Login = () => {
         />
 
         <Text style={styles.title}>Login</Text>
+        {errorMessage && (
+          <Text className="font-pmedium text-red-500 text-2xl pb-6">
+            Authentication Error!!
+          </Text>
+        )}
+
         <Formik
           validationSchema={loginValidationSchema}
           initialValues={{ username: "", password: "" }}
@@ -81,7 +88,10 @@ const Login = () => {
                 <TextInput
                   style={styles.input}
                   placeholder="Username"
-                  onChangeText={handleChange("username")}
+                  onChangeText={(text) => {
+                    setErrorMessage("");
+                    handleChange("username")(text);
+                  }}
                   onBlur={handleBlur("username")}
                   value={values.username}
                 />
@@ -99,7 +109,10 @@ const Login = () => {
                   style={styles.input}
                   placeholder="Password"
                   secureTextEntry
-                  onChangeText={handleChange("password")}
+                  onChangeText={(text) => {
+                    setErrorMessage("");
+                    handleChange("password")(text);
+                  }}
                   onBlur={handleBlur("password")}
                   value={values.password}
                 />
@@ -108,9 +121,7 @@ const Login = () => {
               {errors.password && (
                 <Text style={styles.errorText}>{errors.password}</Text>
               )}
-              {/* <TouchableOpacity onPress={() => navigation.navigate("Forget")}>
-        <Text style={styles.forgotPassword}>Forgot Password?</Text>
-      </TouchableOpacity> */}
+
               <TouchableOpacity
                 style={styles.button}
                 className="bg-accent mt-4"
@@ -119,19 +130,29 @@ const Login = () => {
               >
                 <Text style={styles.buttonText}>Login</Text>
               </TouchableOpacity>
-              {/* <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
-        <Text style={styles.signUp}>
-          Don't have an account?{" "}
-          <Text style={styles.signUpLink}>Sign Up</Text>
-        </Text>
-      </TouchableOpacity> */}
             </>
           )}
         </Formik>
       </View>
-      <NetworkModal
+
+      <ErrorModal
+        visible={isServerError}
+        onClose={() => setIsServerError(false)}
+        message={"Connection Error"}
+        subMessage="Please ensure your device is connected to the correct Wi-Fi
+              network, [Router Name], and that the Termux app is open and
+              running. After confirming these, try again"
+        buttonName={"close"}
+      />
+
+      <ErrorModal
         visible={showNetworkModal}
         onClose={() => setShowNetworkModal(false)}
+        message={"Connection Error"}
+        subMessage="Please ensure your device is connected to the correct Wi-Fi
+              network, [Router Name], and that the Termux app is open and
+              running. After confirming these, try again"
+        buttonName={"close"}
       />
     </>
   );

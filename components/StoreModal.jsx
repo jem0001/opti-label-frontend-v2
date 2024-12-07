@@ -3,16 +3,10 @@ import { Modal, TouchableOpacity } from "react-native";
 import { Text, View } from "react-native";
 import { useGlobalContext } from "../context/context";
 import { router } from "expo-router";
-const StoreModal = ({ visible, onClose }) => {
+const StoreModal = ({ visible, onClose, onSend, isSubmitting }) => {
   const { barcode, rackBarcode, setBarcode, setRackBarcode } =
     useGlobalContext();
-  const handleAddProduct = () => {
-    // reset global variables
-    setBarcode("");
-    setRackBarcode("");
 
-    router.navigate("/");
-  };
   return (
     <Modal visible={visible} transparent={true} animationType="fade">
       <View
@@ -48,7 +42,8 @@ const StoreModal = ({ visible, onClose }) => {
             </TouchableOpacity>
             <TouchableOpacity
               className="bg-accent rounded-lg flex-1 justify-center"
-              onPress={handleAddProduct}
+              onPress={onSend}
+              disabled={isSubmitting}
             >
               <Text className="text-center font-pregular text-white">Ok</Text>
             </TouchableOpacity>
