@@ -2,23 +2,39 @@ import { router } from "expo-router";
 import { ScrollView, TextInput, TouchableOpacity } from "react-native";
 import { StyleSheet, Text, View } from "react-native";
 import { useGlobalContext } from "../../context/context";
+import * as SecureStore from "expo-secure-store";
+import { useEffect, useState } from "react";
 
 const Settings = () => {
   const { logout } = useGlobalContext();
+  const [credentials, setCredentials] = useState({
+    username: "",
+    password: "",
+  });
+  const getCredentials = async () => {
+    const json = await SecureStore.getItemAsync("credentials");
+    const credentialsObject = JSON.parse(json);
+    setCredentials(credentialsObject);
+  };
+
+  useEffect(() => {
+    getCredentials();
+  }, []);
   return (
     <ScrollView className="h-full">
       <View className="flex-1 justify-center items-center  p-4">
         <View>
           <Text className="font-bold my-4 text-lg">Account Settings</Text>
           <View className="w-full bg-white  p-4 rounded-md mb-4">
-            <Text className="m-1">Email</Text>
+            <Text className="m-1">Username</Text>
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.input}
-                placeholder="Email"
+                placeholder="  "
                 // onChangeText={handleChange("password")}
                 // onBlur={handleBlur("password")}
-                value={""}
+                value={credentials.username}
+                readOnly
               />
             </View>
             <Text className="m-1">Password</Text>
@@ -27,9 +43,10 @@ const Settings = () => {
                 style={styles.input}
                 placeholder="Password"
                 secureTextEntry
+                editable={false}
                 // onChangeText={handleChange("password")}
                 // onBlur={handleBlur("password")}
-                value={""}
+                value={credentials.password}
               />
             </View>
             <TouchableOpacity
@@ -41,7 +58,7 @@ const Settings = () => {
           </View>
         </View>
 
-        <View>
+        {/* <View>
           <Text className="font-bold my-4 text-lg">Database Connection</Text>
           <View className="w-full bg-white p-4 rounded-md mb-4">
             <Text className="m-1">Host</Text>
@@ -90,7 +107,7 @@ const Settings = () => {
               <Text className="text-white text-center font-pbold">Save</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </View> */}
       </View>
     </ScrollView>
   );
@@ -111,5 +128,6 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     height: "100%",
+    color: "black",
   },
 });

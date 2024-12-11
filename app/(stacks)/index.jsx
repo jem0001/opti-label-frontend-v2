@@ -72,10 +72,10 @@ const Scan = () => {
             <Text className="font-pregular text-center text-xl text-gray-600 tracking-10 mb-8">
               Please use the integrated scanner to scan your item
             </Text>
-            <View className="flex-row justify-center items-center gap-2">
+            <View className="flex-row justify-center items-center gap-2 mx-2">
               <Ionicons name="information-circle" size={15} color={"gray"} />
-              <Text className="font-pregular text-gray-600 text-center ">
-                Please position barcode withing scanning range
+              <Text className="font-pregular text-gray-600 text-center text-sm ">
+                Please position barcode within scanning range
               </Text>
             </View>
           </View>

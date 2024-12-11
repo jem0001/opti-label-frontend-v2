@@ -102,9 +102,9 @@ const ActionSelection = () => {
     <>
       <View className="flex-1 items-center justify-center h-screen ">
         <View>
-          <Text className="font-psemibold text-3xl mb-6">
+          {/* <Text className="font-psemibold text-3xl mb-6">
             Warehouse Operations
-          </Text>
+          </Text> */}
           {ACTIONS.map((item) => renderItem(item))}
         </View>
       </View>

@@ -145,7 +145,10 @@ const GlobalProvider = ({ children }) => {
         console.log("token setttted");
       } catch (error) {
         if (error.code === "ERR_NETWORK") {
-          console.log("lego error in verify", error.code);
+          if (error.code === "ERR_NETWORK") {
+            setIsServerError(true);
+            throw new Error(error.message);
+          }
         }
         setIsLoggedIn(false);
       }

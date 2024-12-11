@@ -16,6 +16,7 @@ import * as yup from "yup";
 import { Redirect, router } from "expo-router";
 import { useGlobalContext } from "../context/context";
 import ErrorModal from "../components/ErrorModal";
+import * as SecureStore from "expo-secure-store";
 
 const loginValidationSchema = yup.object().shape({
   username: yup.string().required("Username is required"),
@@ -40,6 +41,7 @@ const Login = () => {
       }
       try {
         const token = await login(values.username, values.password);
+        await SecureStore.setItemAsync("credentials", JSON.stringify(values));
       } catch (error) {
         setErrorMessage(error.message);
       }
