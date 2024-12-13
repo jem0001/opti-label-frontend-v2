@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
   Modal,
+  ActivityIndicator,
 } from "react-native";
 import { Image } from "expo-image";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -28,8 +29,16 @@ const loginValidationSchema = yup.object().shape({
 });
 
 const Login = () => {
-  const { isServerError, setIsServerError, isConnected, login, isLoggedIn } =
-    useGlobalContext();
+  const {
+    isServerError,
+    setIsServerError,
+    isConnected,
+    login,
+    isLoggedIn,
+    refreshFlag,
+    setRefreshFlag,
+    loading,
+  } = useGlobalContext();
   const [showNetworkModal, setShowNetworkModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -47,6 +56,14 @@ const Login = () => {
       }
     })();
   };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size={30} />
+      </View>
+    );
+  }
 
   if (isLoggedIn) {
     return <Redirect href={"/"} />;
@@ -139,22 +156,28 @@ const Login = () => {
 
       <ErrorModal
         visible={isServerError}
-        onClose={() => setIsServerError(false)}
+        onClose={() => {
+          setIsServerError(false);
+          setRefreshFlag(!refreshFlag);
+        }}
         message={"Connection Error"}
         subMessage="Please ensure your device is connected to the correct Wi-Fi
               network, [Router Name], and that the Termux app is open and
               running. After confirming these, try again"
-        buttonName={"close"}
+        buttonName={"Try again"}
       />
 
       <ErrorModal
         visible={showNetworkModal}
-        onClose={() => setShowNetworkModal(false)}
+        onClose={() => {
+          setShowNetworkModal(false);
+          setRefreshFlag(!refreshFlag);
+        }}
         message={"Connection Error"}
         subMessage="Please ensure your device is connected to the correct Wi-Fi
               network, [Router Name], and that the Termux app is open and
               running. After confirming these, try again"
-        buttonName={"close"}
+        buttonName={"Try again"}
       />
     </>
   );

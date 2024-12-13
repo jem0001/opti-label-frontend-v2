@@ -15,6 +15,8 @@ const GlobalProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(null);
   const { isConnected } = useNetInfo();
   const [isServerError, setIsServerError] = useState(false);
+  const [refreshFlag, setRefreshFlag] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // ProductFormData
   const [barcode, setBarcode] = useState("");
@@ -138,6 +140,7 @@ const GlobalProvider = ({ children }) => {
 
   useEffect(() => {
     (async () => {
+      setLoading(true);
       try {
         const token = await SecureStore.getItemAsync("accessToken");
         const response = await axios.get("/auth/verify", axiosConfig(token));
@@ -151,9 +154,11 @@ const GlobalProvider = ({ children }) => {
           }
         }
         setIsLoggedIn(false);
+      } finally {
+        setLoading(false);
       }
     })();
-  }, []);
+  }, [refreshFlag]);
   return (
     <GlobalContext.Provider
       value={{
@@ -170,6 +175,10 @@ const GlobalProvider = ({ children }) => {
         setIsLoggedIn,
         isLoggedIn,
         addProductStat,
+        refreshFlag,
+        setRefreshFlag,
+        loading,
+        setLoading,
       }}
     >
       {children}
