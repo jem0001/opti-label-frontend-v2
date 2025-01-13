@@ -15,7 +15,7 @@ This project is a mobile application designed for a PDA device with a built-in b
   - Runs entirely on the PDA device using Termux for hosting the Express.js backend 
 
 ## Technologies Used
-- **Frontend:** React
+- **Frontend:** React Native
 - **Backend:** Express.js
 - **Database:** MySQL
 - **Environment:** Termux (for running the backend and on the PDA device)
