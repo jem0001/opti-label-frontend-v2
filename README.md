@@ -1,5 +1,8 @@
 # PDA-Based Barcode Scanning System
-[Watch the demo video](https://youtu.be/VIDEO_ID)
+
+## Demo Video
+[Watch the demo video](https://drive.google.com/file/d/1qMO-lcA2m64V2xPuLszbu56Jfae2Kxv1/view?usp=sharing)
+In the demo video, an input box was used to simulate barcode scanning as the PDA device was not available during development.
 
 ## Overview
 This project is a mobile application designed for a PDA device with a built-in barcode scanner. It was developed for a client to assist with inventory management tasks, allowing users to scan item barcodes and manage them for either storing or shipping. The application is lightweight, self-contained, and runs entirely on the PDA device, making it ideal for environments without external server dependencies.
